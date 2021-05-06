@@ -55,6 +55,7 @@ async function assumeRole(params) {
     tagArray.push({Key: 'Branch', Value: process.env.GITHUB_REF});
   }
 
+  core.debug('here printing roleSkipSessionTagging ' + roleSkipSessionTagging);
   const roleSessionTags = roleSkipSessionTagging ? undefined : tagArray;
 
   const assumeRoleRequest = {
