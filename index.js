@@ -205,7 +205,7 @@ async function run() {
     const roleDurationSeconds = core.getInput('role-duration-seconds', {required: false}) || MAX_ACTION_RUNTIME;
     const roleSessionName = core.getInput('role-session-name', { required: false }) || ROLE_SESSION_NAME;
     const roleSkipSessionTagging = core.getInput('role-skip-session-tagging', { required: false });
-    core.debug('here printing roleSkipSessionTagging ' + roleSkipSessionTagging);
+    core.debug('here printing roleSkipSessionTagging ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
     if (!region.match(REGION_REGEX)) {
       throw new Error(`Region is not valid: ${region}`);
     }
