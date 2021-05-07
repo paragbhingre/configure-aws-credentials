@@ -55,7 +55,6 @@ async function assumeRole(params) {
     tagArray.push({Key: 'Branch', Value: process.env.GITHUB_REF});
   }
 
-  core.debug('here printing roleSkipSessionTagging ' + roleSkipSessionTagging);
   const roleSessionTags = roleSkipSessionTagging ? undefined : tagArray;
 
   const assumeRoleRequest = {
@@ -249,6 +248,8 @@ async function run() {
         roleSessionName,
         roleSkipSessionTagging
       });
+
+      core.debug('here printing roleCredentials ' + roleCredentials);
       exportCredentials(roleCredentials);
       await validateCredentials(roleCredentials.accessKeyId);
       await exportAccountId(maskAccountId, region);
