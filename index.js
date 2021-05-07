@@ -212,7 +212,7 @@ async function run() {
     if (!region.match(REGION_REGEX)) {
       throw new Error(`Region is not valid: ${region}`);
     }
-
+    core.debug('here printing roleSkipSessionTagging1 ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
     exportRegion(region);
 
     // Always export the source credentials and account ID.
@@ -224,7 +224,7 @@ async function run() {
       if (!secretAccessKey) {
         throw new Error("'aws-secret-access-key' must be provided if 'aws-access-key-id' is provided");
       }
-
+      core.debug('here printing roleSkipSessionTagging2 ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
       exportCredentials({accessKeyId, secretAccessKey, sessionToken});
     }
 
@@ -234,9 +234,9 @@ async function run() {
     // configured correctly, and cases where the user intended to provide input
     // credentials but the secrets inputs resolved to empty strings.
     await validateCredentials(accessKeyId);
-
+    core.debug('here printing roleSkipSessionTagging3 ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
     const sourceAccountId = await exportAccountId(maskAccountId, region);
-
+    core.debug('here printing roleSkipSessionTagging4 ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
     // Get role credentials if configured to do so
     if (roleToAssume) {
       const roleCredentials = await assumeRole({
