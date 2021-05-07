@@ -238,6 +238,7 @@ async function run() {
     const sourceAccountId = await exportAccountId(maskAccountId, region);
     core.debug('here printing roleSkipSessionTagging4 ' + roleSkipSessionTagging + 'type ' + typeof roleSkipSessionTagging);
     // Get role credentials if configured to do so
+    core.debug('here printing roleToAssume ' + roleToAssume);
     if (roleToAssume) {
       const roleCredentials = await assumeRole({
         sourceAccountId,
