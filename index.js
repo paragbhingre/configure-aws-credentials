@@ -249,7 +249,7 @@ async function run() {
         roleSkipSessionTagging
       });
 
-      core.debug('here printing roleCredentials ' + roleCredentials);
+      core.debug('here printing roleCredentials ');
       exportCredentials(roleCredentials);
       await validateCredentials(roleCredentials.accessKeyId);
       await exportAccountId(maskAccountId, region);
