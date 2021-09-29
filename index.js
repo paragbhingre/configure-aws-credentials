@@ -3,7 +3,6 @@ const aws = require('aws-sdk');
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 
 // The max time that a GitHub action is allowed to run is 6 hours.
 // That seems like a reasonable default to use if no role duration is defined.
@@ -46,10 +45,10 @@ async function assumeRole(params) {
   let roleArn = roleToAssume;
   if (!roleArn.startsWith('arn:aws')) {
     // Supports only 'aws' partition. Customers in other partitions ('aws-cn') will need to provide full ARN
-  assert(
-      isDefined(sourceAccountId),
-      "Source Account ID is needed if the Role Name is provided and not the Role Arn."
-  );
+    assert(
+        isDefined(sourceAccountId),
+        "Source Account ID is needed if the Role Name is provided and not the Role Arn."
+    );
     roleArn = `arn:aws:iam::${sourceAccountId}:role/${roleArn}`;
   }
 
@@ -86,7 +85,7 @@ async function assumeRole(params) {
   }
 
   let assumeFunction = sts.assumeRole.bind(sts);
-  
+
   // These are customizations needed for the GH OIDC Provider
   if(isDefined(webIdentityToken)) {
     delete assumeRoleRequest.Tags;
@@ -98,8 +97,8 @@ async function assumeRole(params) {
     delete assumeRoleRequest.Tags;
 
     const webIdentityTokenFilePath = path.isAbsolute(webIdentityTokenFile) ?
-      webIdentityTokenFile :
-      path.join(process.env.GITHUB_WORKSPACE, webIdentityTokenFile);
+        webIdentityTokenFile :
+        path.join(process.env.GITHUB_WORKSPACE, webIdentityTokenFile);
 
     if (!fs.existsSync(webIdentityTokenFilePath)) {
       throw new Error(`Web identity token file does not exist: ${webIdentityTokenFilePath}`);
@@ -111,18 +110,18 @@ async function assumeRole(params) {
     } catch(error) {
       throw new Error(`Web identity token file could not be read: ${error.message}`);
     }
-    
-  } 
+
+  }
 
   return assumeFunction(assumeRoleRequest)
-    .promise()
-    .then(function (data) {
-      return {
-        accessKeyId: data.Credentials.AccessKeyId,
-        secretAccessKey: data.Credentials.SecretAccessKey,
-        sessionToken: data.Credentials.SessionToken,
-      };
-    });
+      .promise()
+      .then(function (data) {
+        return {
+          accessKeyId: data.Credentials.AccessKeyId,
+          secretAccessKey: data.Credentials.SecretAccessKey,
+          sessionToken: data.Credentials.SessionToken,
+        };
+      });
 }
 
 function sanitizeGithubActor(actor) {
@@ -183,21 +182,6 @@ async function exportAccountId(maskAccountId, region) {
   }
   core.setOutput('aws-account-id', accountId);
   return accountId;
-}
-
-async function getWebIdentityToken() {
-  const isDefined = i => !!i;
-  const {ACTIONS_ID_TOKEN_REQUEST_URL, ACTIONS_ID_TOKEN_REQUEST_TOKEN} = process.env;
-
-  assert(
-      [ACTIONS_ID_TOKEN_REQUEST_URL, ACTIONS_ID_TOKEN_REQUEST_TOKEN].every(isDefined),
-      'Missing required environment value. Are you running in GitHub Actions?'
-  );
-  const { data } = await axios.get(`${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sigstore`, {
-    headers: {"Authorization": `bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}`}
-    }
-  );
-  return data.value;
 }
 
 function loadCredentials() {
@@ -277,11 +261,11 @@ async function run() {
     // This wraps the logic for deciding if we should rely on the GH OIDC provider since we may need to reference
     // the decision in a few differennt places. Consolidating it here makes the logic clearer elsewhere.
     const useGitHubOIDCProvider = () => {
-        // The assumption here is that self-hosted runners won't be populating the `ACTIONS_ID_TOKEN_REQUEST_TOKEN`
-        // environment variable and they won't be providing a web idenity token file or access key either.
-        // V2 of the action might relax this a bit and create an explicit precedence for these so that customers
-        // can provide as much info as they want and we will follow the established credential loading precedence.
-        return roleToAssume && process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN && !accessKeyId && !webIdentityTokenFile
+      // The assumption here is that self-hosted runners won't be populating the `ACTIONS_ID_TOKEN_REQUEST_TOKEN`
+      // environment variable and they won't be providing a web idenity token file or access key either.
+      // V2 of the action might relax this a bit and create an explicit precedence for these so that customers
+      // can provide as much info as they want and we will follow the established credential loading precedence.
+      return roleToAssume && process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN && !accessKeyId && !webIdentityTokenFile
     }
 
     // Always export the source credentials and account ID.
@@ -296,14 +280,14 @@ async function run() {
 
       exportCredentials({accessKeyId, secretAccessKey, sessionToken});
     }
-    
+
     // Attempt to load credentials from the GitHub OIDC provider.
     // If a user provides an IAM Role Arn and DOESN'T provide an Access Key Id
     // The only way to assume the role is via GitHub's OIDC provider.
     let sourceAccountId;
     let webIdentityToken;
     if(useGitHubOIDCProvider()) {
-      webIdentityToken = await getWebIdentityToken();
+      webIdentityToken = await core.getIDToken('sts.amazonaws.com');
       roleDurationSeconds = core.getInput('role-duration-seconds', {required: false}) || DEFAULT_ROLE_DURATION_FOR_OIDC_ROLES;
       // We don't validate the credentials here because we don't have them yet when using OIDC.
     } else {
@@ -359,5 +343,5 @@ module.exports = run;
 
 /* istanbul ignore next */
 if (require.main === module) {
-    run();
+  run();
 }
