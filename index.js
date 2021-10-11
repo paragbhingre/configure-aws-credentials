@@ -315,13 +315,11 @@ async function run() {
         webIdentityToken
       });
       exportCredentials(roleCredentials);
-      // I don't know a good workaround for this. I'm not sure why we're validating the credentials
-      // so frequently inside the action. The approach I've taken here is that if the GH OIDC token
-      // isn't set, then we're in a self-hosted runner and we need to validate the credentials for
-      // some mysterious reason that wasn't explained by whoever wrote this aciton.
-      //
-      // It's gross but it works so ... ¯\_(ツ)_/¯
-      if (!process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN) {
+      // We need to validate the credentials in 2 of our use-cases
+      // First: self-hosted runners. If the GITHUB_ACTIONS environment variable
+      //  is set to `true` then we are NOT in a self-hosted runner.
+      // Second: Customer provided credentials manually (IAM User keys stored in GH Secrets)
+      if (!process.env.GITHUB_ACTIONS || accessKeyId) {
         await validateCredentials(roleCredentials.accessKeyId);
       }
       await exportAccountId(maskAccountId, region);

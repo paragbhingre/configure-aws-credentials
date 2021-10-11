@@ -573,8 +573,9 @@ describe('Configure AWS Credentials', () => {
     });
 
     test('only role arn and region provided to use GH OIDC Token', async () => {
+        process.env.GITHUB_ACTIONS = 'true';
         process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN = 'test-token';
-        process.env.ACTIONS_ID_TOKEN_REQUEST_URL = 'https://www.example.com/token/endpoint';
+
         core.getInput = jest
             .fn()
             .mockImplementation(mockGetInput({'role-to-assume': ROLE_ARN, 'aws-region': FAKE_REGION}));
@@ -593,8 +594,8 @@ describe('Configure AWS Credentials', () => {
 
     test('GH OIDC With custom role duration', async () => {
         const CUSTOM_ROLE_DURATION = 1234;
+        process.env.GITHUB_ACTIONS = 'true';
         process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN = 'test-token';
-        process.env.ACTIONS_ID_TOKEN_REQUEST_URL = 'https://www.example.com/token/endpoint';
         core.getInput = jest
             .fn()
             .mockImplementation(mockGetInput({'role-to-assume': ROLE_ARN, 'aws-region': FAKE_REGION, 'role-duration-seconds': CUSTOM_ROLE_DURATION}));
