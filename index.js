@@ -232,7 +232,11 @@ function getStsClient(region) {
   return new aws.STS({
     region,
     stsRegionalEndpoints: 'regional',
-    customUserAgent: USER_AGENT
+    customUserAgent: USER_AGENT,
+    maxRetries: 12,
+    retryDelayOptions: {
+      base: 50
+    }
   });
 }
 
