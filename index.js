@@ -233,7 +233,7 @@ function getStsClient(region) {
     region,
     stsRegionalEndpoints: 'regional',
     customUserAgent: USER_AGENT,
-    maxRetries: 50,
+    /*maxRetries: 50,
     retryDelayOptions: {
       base: 100,
       customBackoff:(retryCount, err) => {
@@ -241,8 +241,33 @@ function getStsClient(region) {
         const base = 100;
         return Math.random() * (Math.pow(2, retryCount) * base);
       },
-    }
+    }*/
   });
+}
+
+// sleep returns a promise that resolves successfully after ms milliseconds.
+const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+// retryAndBackoff retries with exponential backoff the promise if the error isRetryable upto maxRetries time.
+const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 12, base = 50) => {
+  if (retries === maxRetries) {
+    throw new Error("reached maximum number of retries");
+  }
+
+  try {
+    return await promise;
+  } catch (err) {
+    if (!(isRetryable(err))) {
+      throw err;
+    }
+    // It's retryable, so sleep and retry.
+    await sleep(Math.random() * (Math.pow(2, retries) * base));
+    retries += 1;
+    return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
+  }
 }
 
 async function run() {
@@ -312,7 +337,8 @@ async function run() {
 
     // Get role credentials if configured to do so
     if (roleToAssume) {
-      const roleCredentials = await assumeRole({
+      const roleCredentials = await retryAndBackoff(
+          assumeRole({
         sourceAccountId,
         region,
         roleToAssume,
@@ -322,7 +348,7 @@ async function run() {
         roleSkipSessionTagging,
         webIdentityTokenFile,
         webIdentityToken
-      });
+      }));
       exportCredentials(roleCredentials);
       // We need to validate the credentials in 2 of our use-cases
       // First: self-hosted runners. If the GITHUB_ACTIONS environment variable
