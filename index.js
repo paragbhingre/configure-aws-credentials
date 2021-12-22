@@ -236,6 +236,7 @@ function getStsClient(region) {
     maxRetries: 12,
     retryDelayOptions: {
       base: 50,
+      retryCount: 12,
       customBackoff:(retryCount, err) => {
         console.log(`received err: ${JSON.stringify(err)}`);
         const base = 50;
