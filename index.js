@@ -260,7 +260,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
   try {
     return await promise;
   } catch (err) {
-    if (!isRetryable(err)) {
+    if (!isRetryable) {
       throw err;
     }
     // It's retryable, so sleep and retry.
