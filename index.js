@@ -233,7 +233,7 @@ function getStsClient(region) {
     region,
     stsRegionalEndpoints: 'regional',
     customUserAgent: USER_AGENT,
-    maxRetries: 20,
+    maxRetries: 12,
     retryDelayOptions: {
       base: 50,
       customBackoff:(retryCount, err) => {
