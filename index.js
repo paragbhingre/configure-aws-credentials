@@ -263,6 +263,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
   } catch (err) {
     core.debug("in catch " + isRetryable + " " + retries)
     if (!isRetryable) {
+      core.debug("in catch retryable" + isRetryable + " " + retries)
       throw err;
     }
     // It's retryable, so sleep and retry.
