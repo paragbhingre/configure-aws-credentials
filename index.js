@@ -233,7 +233,7 @@ function getStsClient(region) {
     region,
     stsRegionalEndpoints: 'regional',
     customUserAgent: USER_AGENT,
-    maxRetries: 50,
+    /*maxRetries: 50,
     retryDelayOptions: {
       base: 100,
       customBackoff:(retryCount = 12, err) => {
@@ -241,7 +241,7 @@ function getStsClient(region) {
         const base = 100;
         return Math.random() * (Math.pow(2, retryCount) * base);
       },
-    }
+    }*/
   });
 }
 
@@ -337,7 +337,7 @@ async function run() {
 
     // Get role credentials if configured to do so
     if (roleToAssume) {
-      const roleCredentials = await
+      const roleCredentials = await retryAndBackoff(
           assumeRole({
         sourceAccountId,
         region,
@@ -348,7 +348,7 @@ async function run() {
         roleSkipSessionTagging,
         webIdentityTokenFile,
         webIdentityToken
-      });
+      }));
       exportCredentials(roleCredentials);
       // We need to validate the credentials in 2 of our use-cases
       // First: self-hosted runners. If the GITHUB_ACTIONS environment variable
