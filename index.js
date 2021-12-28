@@ -351,7 +351,7 @@ async function run() {
         roleSkipSessionTagging,
         webIdentityTokenFile,
         webIdentityToken
-      }));
+      }), true);
       exportCredentials(roleCredentials);
       // We need to validate the credentials in 2 of our use-cases
       // First: self-hosted runners. If the GITHUB_ACTIONS environment variable
