@@ -252,7 +252,7 @@ const sleep = (ms) => {
 
 
 // retryAndBackoff retries with exponential backoff the promise if the error isRetryable upto maxRetries time.
-const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 12, base = 50) => {
+const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 20, base = 50) => {
   if (retries === maxRetries) {
     throw new Error("reached maximum number of retries");
   }
