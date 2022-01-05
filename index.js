@@ -252,7 +252,7 @@ const sleep = (ms) => {
 
 
 // retryAndBackoff retries with exponential backoff the promise if the error isRetryable upto maxRetries time.
-const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 20, base = 50) => {
+const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 12, base = 50) => {
   if (retries === maxRetries) {
     throw new Error("reached maximum number of retries");
   }
@@ -267,7 +267,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 2
       throw err;
     }
     // It's retryable, so sleep and retry.
-    await sleep(Math.random() * (Math.pow(2, 2) * base));
+    await sleep(Math.random() * (Math.pow(2, maxRetries) * base));
     retries += 1;
     return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
   }
