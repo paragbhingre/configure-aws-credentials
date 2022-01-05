@@ -259,7 +259,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
 
   try {
     core.debug("in try");
-    return await promise();
+    return await promise;
   } catch (err) {
     core.debug("in catch " + isRetryable + " " + retries)
     if (!isRetryable) {
