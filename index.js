@@ -267,7 +267,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 2
       throw err;
     }
     // It's retryable, so sleep and retry.
-    await sleep(Math.random() * (Math.pow(2, 12) * base));
+    await sleep(Math.random() * (Math.pow(2, 2) * base));
     retries += 1;
     return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
   }
