@@ -266,6 +266,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
       core.debug("in catch retryable" + isRetryable + " " + retries)
       throw err;
     }
+  core.debug("Error " + err.message);
     // It's retryable, so sleep and retry.
     await sleep(Math.random() * (Math.pow(2, maxRetries) * base));
     retries += 1;
