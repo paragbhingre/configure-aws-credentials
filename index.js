@@ -252,26 +252,26 @@ const sleep = (ms) => {
 
 
 // retryAndBackoff retries with exponential backoff the promise if the error isRetryable upto maxRetries time.
-const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 12, base = 50) => {
+const retryAndBackoff = async (fn, isRetryable, retries = 0, maxRetries = 12, base = 50) => {
   if (retries === maxRetries) {
     throw new Error("reached maximum number of retries");
   }
 
   //const promise1 = promise;
   try {
-    core.debug("in try " + JSON.stringify(promise));
-    return await promise;
+    core.debug("in try " /*+ JSON.stringify(promise)*/);
+    return await fn();
   } catch (err) {
     core.debug("in catch " + isRetryable + " " + retries)
     if (!isRetryable) {
       core.debug("in catch retryable" + isRetryable + " " + retries)
       throw err;
     }
-  core.debug("Error " + err.message + "     here " + JSON.stringify(promise));
+  core.debug("Error " + err.message + "     here " /*+ JSON.stringify(promise)*/);
     // It's retryable, so sleep and retry.
-    await sleep( Math.random() * (Math.pow(2, maxRetries) * 25));
+    await sleep( Math.random() * (Math.pow(2, retries) * base));
     retries += 1;
-    return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
+    return await retryAndBackoff(fn, isRetryable, retries, maxRetries, base);
   }
 }
 
@@ -343,7 +343,7 @@ async function run() {
     // Get role credentials if configured to do so
     if (roleToAssume) {
       const roleCredentials = await retryAndBackoff(
-          async () => assumeRole({
+          async () => { return await assumeRole({
         sourceAccountId,
         region,
         roleToAssume,
@@ -353,7 +353,7 @@ async function run() {
         roleSkipSessionTagging,
         webIdentityTokenFile,
         webIdentityToken
-      }), true);
+      }) }, true);
       exportCredentials(roleCredentials);
       // We need to validate the credentials in 2 of our use-cases
       // First: self-hosted runners. If the GITHUB_ACTIONS environment variable
