@@ -258,7 +258,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
   }
 
   try {
-    core.debug("in try");
+    core.debug("in try " + promise);
     return await promise;
   } catch (err) {
     core.debug("in catch " + isRetryable + " " + retries)
@@ -266,9 +266,9 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
       core.debug("in catch retryable" + isRetryable + " " + retries)
       throw err;
     }
-  core.debug("Error " + err.message);
+  core.debug("Error " + err.message + "     here " + promise);
     // It's retryable, so sleep and retry.
-    await sleep( Math.random() * (Math.pow(2, maxRetries) * 25));
+    await sleep( Math.random(2, 15) * (Math.pow(2, maxRetries) * 25));
     retries += 1;
     return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
   }
