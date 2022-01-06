@@ -257,6 +257,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
     throw new Error("reached maximum number of retries");
   }
 
+  const promise1 = promise;
   try {
     core.debug("in try " + JSON.stringify(promise));
     return await promise;
@@ -270,7 +271,7 @@ const retryAndBackoff = async (promise, isRetryable, retries = 0, maxRetries = 1
     // It's retryable, so sleep and retry.
     await sleep( Math.random() * (Math.pow(2, maxRetries) * 25));
     retries += 1;
-    return await retryAndBackoff(promise, isRetryable, retries, maxRetries, base);
+    return await retryAndBackoff(promise1, isRetryable, retries, maxRetries, base);
   }
 }
 
