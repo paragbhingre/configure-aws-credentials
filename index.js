@@ -342,7 +342,7 @@ async function run() {
     // Get role credentials if configured to do so
     if (roleToAssume) {
       const roleCredentials = await retryAndBackoff(
-          assumeRole({
+          () => assumeRole({
         sourceAccountId,
         region,
         roleToAssume,
