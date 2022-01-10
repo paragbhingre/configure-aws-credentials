@@ -617,6 +617,24 @@ describe('Configure AWS Credentials', () => {
         expect(core.setSecret).toHaveBeenNthCalledWith(3, FAKE_STS_SESSION_TOKEN);
     });
 
+    test('role assumption fails after maximun trials using OIDC Provider', async () => {
+
+        process.env.GITHUB_ACTIONS = 'true';
+        process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN = 'test-token';
+
+        core.getInput = jest
+            .fn()
+            .mockImplementation(mockGetInput({'role-to-assume': ROLE_ARN, 'aws-region': FAKE_REGION}));
+
+        mockStsAssumeRoleWithWebIdentity.mockReset();
+        mockStsAssumeRoleWithWebIdentity.mockImplementation(() => {
+            throw new Error();
+        });
+
+        await assert.rejects(() => run());
+        expect(mockStsAssumeRoleWithWebIdentity).toHaveBeenCalledTimes(12)
+    });
+
     test('role external ID provided', async () => {
         core.getInput = jest
             .fn()
