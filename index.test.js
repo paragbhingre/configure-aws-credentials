@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const assert = require('assert');
 const aws = require('aws-sdk');
-const run = require('./index.js');
+const { run, withSleep, reset }  = require('./index.js');
 
 jest.mock('@actions/core');
 
@@ -156,10 +156,15 @@ describe('Configure AWS Credentials', () => {
                 }
             }
         });
+
+        withSleep(() => {
+            return Promise.resolve();
+        });
     });
 
     afterEach(() => {
         process.env = OLD_ENV;
+        reset();
     });
 
     test('exports env vars', async () => {
