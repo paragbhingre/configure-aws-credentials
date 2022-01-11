@@ -618,7 +618,6 @@ describe('Configure AWS Credentials', () => {
     });
 
     test('role assumption fails after maximun trials using OIDC Provider', async () => {
-
         process.env.GITHUB_ACTIONS = 'true';
         process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN = 'test-token';
 

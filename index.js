@@ -250,7 +250,7 @@ const retryAndBackoff = async (fn, isRetryable, retries = 0, maxRetries = 12, ba
       throw err;
     }
     // It's retryable, so sleep and retry.
-    await sleep( Math.max(Math.random() * (Math.pow(2, retries) * base)), );
+    await sleep(Math.random() * (Math.pow(2, retries) * base) );
     retries += 1;
     if (retries === maxRetries) {
       throw err;
